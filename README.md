@@ -8,6 +8,8 @@ O sistema resolve a dificuldade de rápida assimilação de termos técnicos, ma
 
 ## 🏗️ Visão Geral da Arquitetura
 
+![Fluxo da Arquitetura RAG](docs/diagrama_fluxo.png)
+
 A arquitetura on-premise conecta componentes modernos de desenvolvimento backend em Java com inteligência artificial executada localmente, garantindo zero exposição de dados industriais sensíveis.
 
 *   **Camada de Apresentação / API:** Microsserviços desenvolvidos em Java (Quarkus) expostos via REST.
