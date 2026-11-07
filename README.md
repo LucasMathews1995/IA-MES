@@ -1,70 +1,37 @@
-# rag-suporte-backend
+# Assistente Inteligente RAG para Suporte MES (rag-suporte-backend)
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Este projeto implementa um assistente inteligente baseado em RAG (Retrieval-Augmented Generation) para centralizar, dinamizar e democratizar o acesso ao conhecimento técnico corporativo no chão de fábrica. 
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+O sistema resolve a dificuldade de rápida assimilação de termos técnicos, manuais operacionais extensos e regras de negócio complexas inerentes ao sistema MES (Manufacturing Execution System), reduzindo o MTTR (Mean Time to Repair) e a dependência de suporte especializado de terceiro nível.
 
-## Running the application in dev mode
+---
 
-You can run your application in dev mode that enables live coding using:
+## 🏗️ Visão Geral da Arquitetura
 
-```shell script
-./mvnw quarkus:dev
-```
+A arquitetura on-premise conecta componentes modernos de desenvolvimento backend em Java com inteligência artificial executada localmente, garantindo zero exposição de dados industriais sensíveis.
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+*   **Camada de Apresentação / API:** Microsserviços desenvolvidos em Java (Quarkus) expostos via REST.
+*   **Camada de Orquestração de IA:** LangChain4j gerenciando o fluxo de RAG, embeddings e engenharia de prompts.
+*   **Camada de Persistência Vetorial:** PostgreSQL com extensão `pgvector` armazenando os chunks e embeddings.
+*   **Motor de Inferência Local:** Ollama executando modelos open-source (ex: Llama 3) de forma isolada e segura.
+*   **Autenticação:** Gerenciamento de acessos via Keycloak (OIDC).
 
-## Packaging and running the application
+---
 
-The application can be packaged using:
+## ✨ Funcionalidades Principais
 
-```shell script
-./mvnw package
-```
+*   **Consulta Textual em Linguagem Natural:** Submissão de perguntas sobre falhas de processos, IOPs e regras de negócio do MES.
+*   **Filtragem Contextual por Metadados:** Aplicação de filtros prévios baseados em código do equipamento, setor da fábrica e módulo do MES antes da busca vetorial.
+*   **Recuperação de Contexto Vetorial:** Uso de similaridade de cosseno via `pgvector` para resgatar os trechos mais relevantes.
+*   **Geração de Respostas Aumentadas:** Síntese de respostas precisas e contextualizadas, mitigando alucinações técnicas e sem tomada de decisão autônoma ou comandos automáticos nas máquinas.
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+---
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+## 🚀 Como Executar o Projeto
 
-If you want to build an _über-jar_, execute the following command:
+O projeto utiliza o framework Quarkus. Certifique-se de ter o Docker, Docker Compose e o JDK 17+ instalados.
 
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
-```
-
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
-
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/rag-suporte-backend-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Related Guides
-
-- REST ([guide](https://quarkus.io/guides/rest)): Build RESTful web services and APIs using Jakarta REST (formerly JAX-RS)
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
-- JDBC Driver - PostgreSQL ([guide](https://quarkus.io/guides/datasource)): Connect to the PostgreSQL database via JDBC
-- LangChain4j AI Gemini ([guide](https://docs.quarkiverse.io/quarkus-langchain4j/dev/index.html)): Provides integration of Quarkus LangChain4j with AI Gemini
-
-## Provided Code
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
-# IA-MES
+### 1. Subindo a Infraestrutura (Banco de Dados, Ollama e Keycloak)
+Inicie os serviços auxiliares em background:
+```bash
+docker-compose up -d
