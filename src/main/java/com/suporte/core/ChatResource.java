@@ -6,12 +6,13 @@ import com.suporte.core.dto.QueryContextDTO;
 import com.suporte.core.factory.SuportAIFactory;
 import com.suporte.core.infraestructure.MesKeyWordExtractor;
 import com.suporte.core.strategy.SuportAIStrategy;
-import com.suporte.iop.chat.IOPChatAIService;
+import com.suporte.iop.chat.IopChatAIService;
 
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -25,7 +26,7 @@ import jakarta.ws.rs.core.Response;
 public class ChatResource {
 
     @Inject
-    IOPChatAIService suporteAiService;
+    IopChatAIService suporteAiService;
 
     @Inject
     EmbeddingModel embeddingModel;
@@ -40,7 +41,7 @@ public class ChatResource {
     MesKeyWordExtractor extractor;
 
   @POST
-public Response chat(ChatRequestDTO request) {
+public Response chat(@Valid ChatRequestDTO request) {
     if (request == null || request.pergunta() == null || request.pergunta().isBlank()) {
         return Response.status(Response.Status.BAD_REQUEST)
                 .entity(new ChatResponse("A pergunta não pode estar vazia."))
@@ -48,10 +49,10 @@ public Response chat(ChatRequestDTO request) {
     }
     QueryContextDTO contextDTO = extractor.extrair(request.pergunta());
 
-    // A Factory roteia para o serviço correto com base no DTO (TREINAMENTO, IOP, EXPLICACAO)
+
     SuportAIStrategy servico = factory.obterServico(request.categoriaSuporte());
     
-    // O processamento interno (com ou sem pgvector) é decidido pelo serviço retornado
+
     String respostaIA = servico.process(contextDTO);
 
     return Response.ok(new ChatResponse(respostaIA)).build();

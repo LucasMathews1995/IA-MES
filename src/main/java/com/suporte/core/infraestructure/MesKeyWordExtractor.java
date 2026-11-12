@@ -15,7 +15,7 @@ public class MesKeyWordExtractor {
 
 
 private static final Set<String> EQUIPAMENTOS_CONHECIDOS = Set.of(
-        "LRC", "LRC 2", "LER", "LACF4", "EMB", "MCC", "LTNO", "LCG"
+        "LRC", "LRC2", "LER", "LACF4", "EMB", "MCC", "LTNO", "LCG"
     );
     
     private static final Pattern PATTERN_TELA = Pattern.compile(
@@ -41,7 +41,7 @@ private static final Set<String> EQUIPAMENTOS_CONHECIDOS = Set.of(
 
         String upperText = rawText.toUpperCase();
 
-        // 1. Extração de Equipamentos
+
         Set<String> equipamentos = new HashSet<>();
         for (String eq : EQUIPAMENTOS_CONHECIDOS) {
             if (upperText.contains(eq)) {

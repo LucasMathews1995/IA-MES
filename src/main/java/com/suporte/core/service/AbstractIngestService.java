@@ -1,5 +1,6 @@
 package com.suporte.core.service;
 
+import java.io.InputStream;
 import java.util.Scanner;
 
 import com.suporte.core.strategy.IngestionSuportStrategy;
@@ -29,6 +30,10 @@ public abstract class AbstractIngestService implements IngestionSuportStrategy {
             return bloco.substring(0, indexFim).trim();
         }
         return bloco.trim();
+    }
+
+    protected InputStream carregarArquivoMarkdown(String nomeArquivo) {
+        return Thread.currentThread().getContextClassLoader().getResourceAsStream(nomeArquivo);
     }
 
     protected String extrairTitulo(String texto, String fallbackTitulo) {
