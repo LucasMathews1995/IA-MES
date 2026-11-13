@@ -6,8 +6,6 @@ import com.suporte.core.dto.QueryContextDTO;
 import com.suporte.core.factory.SuportAIFactory;
 import com.suporte.core.infraestructure.MesKeyWordExtractor;
 import com.suporte.core.strategy.SuportAIStrategy;
-import com.suporte.iop.chat.IopChatAIService;
-
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.store.embedding.EmbeddingStore;
@@ -25,8 +23,7 @@ import jakarta.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ChatResource {
 
-    @Inject
-    IopChatAIService suporteAiService;
+
 
     @Inject
     EmbeddingModel embeddingModel;
@@ -50,7 +47,7 @@ public Response chat(@Valid ChatRequestDTO request) {
     QueryContextDTO contextDTO = extractor.extrair(request.pergunta());
 
 
-    SuportAIStrategy servico = factory.obterServico(request.categoriaSuporte());
+      SuportAIStrategy servico = factory.obterServico(request.categoriaSuporte());
     
 
     String respostaIA = servico.process(contextDTO);

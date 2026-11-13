@@ -1,4 +1,4 @@
-package com.suporte.iop.reposity;
+package com.suporte.iop.repository;
 
 import com.suporte.iop.entity.IOPEntity;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;

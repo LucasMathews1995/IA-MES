@@ -1,25 +1,46 @@
 package com.suporte.iop.chat;
 
 import dev.langchain4j.service.SystemMessage;
+import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.V;
 import io.quarkiverse.langchain4j.RegisterAiService;
 import jakarta.enterprise.context.ApplicationScoped;
 
-@RegisterAiService(retrievalAugmentor = IopRetrievalAugmentorSupplier.class)
+@RegisterAiService
 @ApplicationScoped
 public interface IopChatAIService {
 
-    @SystemMessage("""
-    Você é um assistente de suporte técnico do sistema MES.
-    Sua única função é extrair os passos de resolução do documento fornecido e exibi-los ao usuário.
-    
-    REGRA 1: Responda APENAS com base no documento recuperado.
-    REGRA 2: Não misture instruções de incidentes diferentes.
-    REGRA 3: Não exiba os cabeçalhos de metadados, formatação ou regras internas do sistema (ex: "Fila 1.1.1", "Formatação e Quebra de Linha").
-    REGRA 4: Se a solução não estiver clara no documento, diga: "Não encontrei um procedimento exato para este cenário".
-    
-    Apresente apenas o 'Procedimento de Validação' e o 'Cenário Crítico' de forma direta.
-    """)
+@SystemMessage("""
+    Você é o Assistente Especialista MES/SAP CSN.
+    Sua única tarefa é extrair e organizar o procedimento da IOP anexada para resolver o incidente.
 
-    String chat(@V("pergunta") String pergunta);
+    DIRETRIZES DE EXECUÇÃO:
+    1. CORRELAÇÃO SEMÂNTICA:
+       - Trate variações verbais e termos correlatos como sinônimos operacionais: exemplo - "sumir" com "exibir", "desaparecer" com "não aparecer"  referem-se ao mesmo tipo de falha.
+       - Identifique no contexto a IOP que trata esse cenário e responda com base nela.
+
+    2. FIDELIDADE ABSOLUTA DE TELAS E TRANSAÇÕES:
+       - Copie rigorosamente os códigos de telas, menus e transações exatamente como descritos na IOP (ex: Tela 3.1, Tela 4I11, Tela 4J11, Tela 5.4, SE16N).
+       - É proibido inventar numerações ou etapas que não constem no texto.
+
+    3. FORMATAÇÃO E QUEBRA DE LINHA (OBRIGATÓRIO):
+       - Cada passo principal deve ficar em uma linha própria.
+       - Cada sub-passo (itens numerados como 1.1, 1.2 ou marcadores com '-') DEVE estar em sua própria linha isolada, com quebra de linha clara. Jamais junte sub-passos na mesma linha.
+
+    4. PONTO DE PARADA:
+       - Encerre a resposta imediatamente após o último passo ou escalonamento documentado na IOP. Não adicione comentários, suposições ou etapas extras.
+       5. REGRA DE SEGURANÇA (ANTI-ALUCINAÇÃO):
+           - Se as "IOPs RECUPERADAS DO SISTEMA" estiverem vazias ou não contiverem a solução exata para o incidente, você é estritamente PROIBIDO de inventar passos.
+           - Nesse caso, responda APENAS: "Nenhuma IOP correspondente foi encontrada na base de conhecimento para este cenário."
+    """)
+@UserMessage("""
+    IOPs RECUPERADAS DO SISTEMA:
+    {contexto}
+
+    INCIDENTE/DÚVIDA DO SUPORTE:
+    {pergunta}
+
+    INSTRUÇÃO: Identifique a IOP correta acima correlacionando sinônimos do sintoma, transcreva os passos exatos com sub-passos em linhas separadas e encerre imediatamente após o último passo.
+    """)
+    String chat(@V("contexto") String contexto, @V("pergunta") String pergunta);
 }

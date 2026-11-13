@@ -4,8 +4,15 @@ import com.suporte.core.categoriasuporte.SuportCategory;
 import com.suporte.core.dto.QueryContextDTO;
 import com.suporte.core.strategy.SuportAIStrategy;
 import com.suporte.iop.chat.IopChatAIService;
+import com.suporte.iop.chat.IopHybridRetriever;
+import dev.langchain4j.rag.content.Content;
+import dev.langchain4j.rag.query.Query;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 /*
 * Trade-off
 * pode parecer que é um sinkhole , mas conforme o projeto for crescendo verá que pode ter dados e busca dinâmicas mais profundas nisso
@@ -22,6 +29,8 @@ public class IopAIService implements SuportAIStrategy {
 
     @Inject
     IopChatAIService iopAIService;
+    @Inject
+    IopHybridRetriever iopHybridRetriever;
 
 
     @Override
@@ -34,8 +43,19 @@ public class IopAIService implements SuportAIStrategy {
     @Override
     public String process(QueryContextDTO context) {
 
-        
-        return iopAIService.chat( context.rawText());
+        String pergunta = context.rawText();
+
+        List<Content> conteudos = iopHybridRetriever.retrieve(Query.from(pergunta));
+
+
+        if (conteudos.isEmpty()) {
+            return "Nenhuma IOP correspondente foi encontrada na base de conhecimento para este cenário.";
+        }
+        String contextoRecuperado = conteudos.stream()
+                .map(c -> c.textSegment().text())
+                .collect(Collectors.joining("\n\n"));
+
+        return iopAIService.chat(contextoRecuperado,context.rawText());
     }
 }
 

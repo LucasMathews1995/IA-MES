@@ -1,24 +1,28 @@
 package com.suporte.iop.dto;
 
+import com.suporte.iop.entity.EquipmentType;
 import com.suporte.iop.entity.IOPEntity;
 
-public record IopResponse(
-        String id,
+
+public record IopResponseDTO(
+        Long id,
         String titulo,
-        String equipamento,
+        EquipmentType equipamento,
         String chamadoReferencia,
         String texto
 ) {
 
-    public IopResponse(IOPEntity iopEntity) {
+    public IopResponseDTO(IOPEntity iopEntity) {
         this(
-                iopEntity.id != null ? iopEntity.id.toString() : null,
+                iopEntity.id ,
                 iopEntity.titulo,
                 iopEntity.equipamento,
                 iopEntity.chamadoReferencia,
                 iopEntity.texto
         );
     }
+
+
 }
 
 

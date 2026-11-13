@@ -1,8 +1,8 @@
 package com.suporte.iop.service;
 
 
-import com.suporte.iop.dto.IopRequest;
-import com.suporte.iop.dto.IopResponse;
+import com.suporte.iop.dto.IopRequestDTO;
+import com.suporte.iop.dto.IopResponseDTO;
 import com.suporte.iop.entity.IOPEntity;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentSplitter;
@@ -29,29 +29,29 @@ public class IopService {
     EmbeddingStore<TextSegment> embeddingStore;
 
 
-    public List<IopResponse> listarIops() {
-
-
-        return IOPEntity.findAll().project(IopResponse.class).list();
-
+    public List<IopResponseDTO> listarIops() {
+        List<IOPEntity> entidades = IOPEntity.listAll();
+        return entidades.stream()
+                .map(IopResponseDTO::new)
+                .toList();
     }
 
 
 
     @Transactional
-    public IopResponse saveIOP(IopRequest dto) {
+    public IopResponseDTO saveIOP(IopRequestDTO dto) {
 
         IOPEntity iop = new IOPEntity();
         iop.titulo = dto.titulo();
         iop.equipamento = dto.equipamento();
         iop.chamadoReferencia = dto.chamadoReferencia();
-        iop.texto = dto.texto();
+        iop.texto = dto.text();
 
         iop.persistAndFlush();
 
         processAndIngestNoPgVector(iop);
 
-return new IopResponse(iop);
+return new IopResponseDTO(iop);
     }
 
 
@@ -61,7 +61,7 @@ return new IopResponse(iop);
         Metadata metadata = Metadata.from("tipo_documento", "IOP")
                 .put("id_relacional", entity.id.toString())
                 .put("titulo", entity.titulo)
-                .put("equipamento", entity.equipamento)
+                .put("equipamento", entity.equipamento.toString())
                 .put("chamadoReferencia",entity.chamadoReferencia);
 
 

@@ -1,6 +1,6 @@
-package com.suporte.iop.resources;
+package com.suporte.iop.resource;
 
-import com.suporte.iop.dto.IopResponse;
+import com.suporte.iop.dto.IopResponseDTO;
 import com.suporte.iop.service.IopEventService;
 import com.suporte.iop.service.IopService;
 import io.smallrye.mutiny.Multi;
@@ -13,7 +13,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
 
-import com.suporte.iop.dto.IopRequest;
+import com.suporte.iop.dto.IopRequestDTO;
 
 import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.reactive.RestStreamElementType;
@@ -25,7 +25,7 @@ import org.jboss.resteasy.reactive.RestStreamElementType;
  * separados. A duplicação aqui garante a independência (evita acoplamento indesejado).
  */
 @Path("/api/iops")
-public class IopResources {
+public class IopResource {
 
     @Inject
     IopService iopService;
@@ -35,15 +35,15 @@ public class IopResources {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<IopResponse> listarIops() {
+    public List<IopResponseDTO> listarIops() {
         return iopService.listarIops();
     }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Response inserirIops(IopRequest iopDTO) {
+    public Response inserirIops(IopRequestDTO iopDTO) {
         try{
-          IopResponse response =   iopService.saveIOP(iopDTO);
+          IopResponseDTO response =   iopService.saveIOP(iopDTO);
             iopEventService.notificarNovaIop(response);
             return Response.status(Response.Status.CREATED).build();
         }catch (Exception e) {
@@ -56,9 +56,9 @@ public class IopResources {
     }
     @GET
     @Path("/stream")
-    @Produces(MediaType.SERVER_SENT_EVENTS) // Importante: SSE!
-    @RestStreamElementType(MediaType.APPLICATION_JSON) // Os dados trafegados são JSON
-    public Multi<IopResponse> streamIops() {
+    @Produces(MediaType.SERVER_SENT_EVENTS)
+    @RestStreamElementType(MediaType.APPLICATION_JSON)
+    public Multi<IopResponseDTO> streamIops() {
         return iopEventService.obterStream();
     }
 
